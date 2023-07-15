@@ -1,0 +1,4 @@
+aggregate Hotel
+handles OpenRoom, BookRoom
+emits RoomOpened, RoomBooked
+

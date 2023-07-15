@@ -1,0 +1,26 @@
+@host = http://localhost:3000
+
+### Try to open room  
+POST {{host}}/command/Hotel/123/OpenRoom
+Content-Type: application/json
+Cookie: 'next-auth.csrf-token=52b166538e915c718ff5cf2e85b85800834a11c01c936e40cd2b0873924aca52%7Cbd332c43477b7adaf499a6bfe5ec8fc0281c8df9224c9bf0ff8c58fa463b139f; next-auth.callback-url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard; next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..J6v9_hym9QIo_54n.57dmvUvCw4Xtr2EiTHKGp2hvX4eNecZAsT0pH2CPUdItvhFwmz6U_NeCT5tr04r6C7OI0PoEMWsI_ED_1SiMcUoKqL8ce5vkHdNN5WdPNAMhPaRAZ_I_Lc42SGv1QQT0-1XBkWREAvlcF5U7LJvJ7knoT0W2kyb332b5Io_wQx0VkWqc9qVkZbE-zAVJAzXSwh0Y_v2MIr3w6t2jar6BFrn16Dcdd0M2StH5CVm4DcZMOShP_NOwPX3q7BwY4IedtBNWKic5poKh_f1L7GFJLcUrr3CIK6O5F0Fm1ucCXc3awSdiURJbjz3UufRv5ZrE-qKEq6c2hKPiJ2BsXLEzN5ZP0B5S31nb4W7Nw1sGVRQEj3z8hX8.b_5TjTnTzJOnSWcrK5y6tw'
+
+{
+  "price": 100,
+  "text2": "text2"
+}
+
+### Try to book room  
+POST {{host}}/command/Hotel/123/BookRoom
+Content-Type: application/json
+Cookie: 'next-auth.csrf-token=52b166538e915c718ff5cf2e85b85800834a11c01c936e40cd2b0873924aca52%7Cbd332c43477b7adaf499a6bfe5ec8fc0281c8df9224c9bf0ff8c58fa463b139f; next-auth.callback-url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard; next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..J6v9_hym9QIo_54n.57dmvUvCw4Xtr2EiTHKGp2hvX4eNecZAsT0pH2CPUdItvhFwmz6U_NeCT5tr04r6C7OI0PoEMWsI_ED_1SiMcUoKqL8ce5vkHdNN5WdPNAMhPaRAZ_I_Lc42SGv1QQT0-1XBkWREAvlcF5U7LJvJ7knoT0W2kyb332b5Io_wQx0VkWqc9qVkZbE-zAVJAzXSwh0Y_v2MIr3w6t2jar6BFrn16Dcdd0M2StH5CVm4DcZMOShP_NOwPX3q7BwY4IedtBNWKic5poKh_f1L7GFJLcUrr3CIK6O5F0Fm1ucCXc3awSdiURJbjz3UufRv5ZrE-qKEq6c2hKPiJ2BsXLEzN5ZP0B5S31nb4W7Nw1sGVRQEj3z8hX8.b_5TjTnTzJOnSWcrK5y6tw'
+
+{
+  "from": "2023-07-21",
+  "to": "2023-07-22T00:00:00Z",
+  "customer": "testing customer"
+}
+
+
+
+
