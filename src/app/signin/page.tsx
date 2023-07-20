@@ -7,11 +7,9 @@ import { ThemeSupa } from "@supabase/auth-ui-shared"
 
 const getURL = () => {
   console.log("env", JSON.stringify(process.env))
-  console.log("origin", window?.origin)
 
   return (
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    window?.origin ??
     "http://localhost:3000"
   )
 }
