@@ -32,6 +32,6 @@ export async function middleware(req: NextRequest) {
   return data.session ? res : NextResponse.redirect(new URL("/", req.url))
 }
 
-export const config = {
-  matcher: ["/dashboard/:path*", "/command/:path*"],
-}
+// export const config = {
+//   matcher: ["/dashboard/:path*", "/command/:path*"],
+// }
