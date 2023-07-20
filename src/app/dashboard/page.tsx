@@ -1,5 +1,6 @@
 "use client"
 
+import { useSession } from "@/components/SupabaseProvider"
 import BookRoom from "@/components/commands/BookRoom"
 import OpenRoom from "@/components/commands/OpenRoom"
 import {

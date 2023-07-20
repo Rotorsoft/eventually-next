@@ -22,14 +22,20 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl
   const res = NextResponse.next()
+
   // Create a Supabase client configured to use cookies
   const supabase = createMiddlewareClient({ req, res })
   // Refresh session if expired - required for Server Components
   // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-session-with-middleware
   const { data } = await supabase.auth.getSession()
-  // console.log("session", data.session)
-  return data.session ? res : NextResponse.redirect(new URL("/", req.url))
+
+  // protected routes
+  if (!data.session && pathname.startsWith("/dashboard"))
+    return NextResponse.redirect(new URL("/", req.url))
+
+  return res
 }
 
 // export const config = {
