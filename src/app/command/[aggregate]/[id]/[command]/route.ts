@@ -1,4 +1,4 @@
-import { authOptions } from "@/lib/auth"
+import { authOptions } from "@/lib/next-auth"
 import {
   CommandHandlerFactory,
   Errors,

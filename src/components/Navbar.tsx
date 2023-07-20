@@ -3,10 +3,13 @@
 import Icons from "@/components/Icons"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { useSession } from "@/components/SupabaseProvider"
+// import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import SignInButton from "@/components/SignInButton"
+import SignOutButton from "@/components/SignOutButton"
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -14,7 +17,16 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme()
 
   const isLight = theme === "light"
-  const isAuth = session.status === "authenticated"
+
+  // Next-Auth
+  // const isAuth = session.status === "authenticated"
+  // const username = session.data.user?.name?.substring(0, 2).toUpperCase()
+  // const image = session.data.user?.image
+
+  // Supabase
+  const isAuth = session
+  const username = session?.user.email
+  const image = session?.user.user_metadata["picture"]
 
   return (
     <div className="p-3 border-b border-slate-300 dark:border-slate-700 w-full flex justify-between items-center">
@@ -46,31 +58,13 @@ export default function Navbar() {
         {isAuth ? (
           <>
             <Avatar>
-              <AvatarImage src={session.data.user?.image || ""} />
-              <AvatarFallback>
-                {session.data.user?.name?.substring(0, 2).toUpperCase()}
-              </AvatarFallback>
+              <AvatarImage src={image || ""} />
+              <AvatarFallback>{username}</AvatarFallback>
             </Avatar>
-            <Button
-              className="ml-3"
-              variant="outline"
-              onClick={() =>
-                signOut({
-                  callbackUrl: "/",
-                })
-              }
-            >
-              Sign Out
-            </Button>
+            <SignOutButton />
           </>
         ) : (
-          <Button
-            className="ml-3"
-            variant="outline"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          >
-            Sign In
-          </Button>
+          <SignInButton />
         )}
       </div>
     </div>

@@ -1,13 +1,22 @@
 "use client"
 
-import { useSession } from "next-auth/react"
+import { useSession } from "@/components/SupabaseProvider"
+// import { useSession } from "next-auth/react"
 
 export default function RequireAuth() {
   const session = useSession()
 
-  return session.status === "authenticated" ? (
+  // Next-Auth
+  // const isAuth = session.status === "authenticated"
+  // const email = session.data?.user?.email
+
+  // Supabase
+  const isAuth = session
+  const email = session?.user.email
+
+  return isAuth ? (
     <blockquote>
-      You are good to go as <b>{session.data?.user?.email}</b> !
+      You are good to go as <b>{email}</b> !
     </blockquote>
   ) : (
     <div>

@@ -1,12 +1,19 @@
 "use client"
 
 import { ThemeProvider } from "next-themes"
-import { SessionProvider } from "next-auth/react"
+import { SupabaseProvider } from "@/components/SupabaseProvider"
+// import { SessionProvider } from "next-auth/react"
 
 export default function Providers({ children }: React.PropsWithChildren) {
   return (
+    // Next-Auth with Prisma
+    // <ThemeProvider attribute="class" defaultTheme="dark">
+    //   <SessionProvider>{children}</SessionProvider>
+    // </ThemeProvider>
+
+    // Supabase
     <ThemeProvider attribute="class" defaultTheme="dark">
-      <SessionProvider>{children}</SessionProvider>
+      <SupabaseProvider>{children}</SupabaseProvider>
     </ThemeProvider>
   )
 }
