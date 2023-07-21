@@ -27,7 +27,7 @@ export default function SignIn() {
         <Auth
           supabaseClient={supabase}
           providers={["google"]}
-          redirectTo={"/auth/callback"}
+          // redirectTo={"/auth/callback"}
           magicLink={true}
           appearance={{
             theme: ThemeSupa,
