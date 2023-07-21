@@ -3,7 +3,7 @@
 import { useSupabase } from "@/components/SupabaseProvider"
 import { Auth } from "@supabase/auth-ui-react"
 import { ThemeSupa } from "@supabase/auth-ui-shared"
-// import { useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 // import { signIn } from "next-auth/react"
 
 export default function SignIn() {
@@ -11,15 +11,15 @@ export default function SignIn() {
   // signIn("google", { callbackUrl: "/dashboard" })
 
   const supabase = useSupabase()
+  const host = useRef<string>()
 
-  // const host = useRef<string>()
-  // useEffect(() => {
-  //   const url = window.location.href
-  //   host.current = url.substring(
-  //     0,
-  //     url.length - window.location.pathname.length
-  //   )
-  // }, [])
+  useEffect(() => {
+    const url = window.location.href
+    host.current = url.substring(
+      0,
+      url.length - window.location.pathname.length
+    )
+  }, [])
 
   return (
     <div className="flex justify-center height-screen-helper">
@@ -27,7 +27,7 @@ export default function SignIn() {
         <Auth
           supabaseClient={supabase}
           providers={["google"]}
-          // redirectTo={"/auth/callback"}
+          redirectTo={`${host.current}/auth/callback`}
           magicLink={true}
           appearance={{
             theme: ThemeSupa,

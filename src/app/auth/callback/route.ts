@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server"
 // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-sign-in-with-code-exchange
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code")
+  console.log("/auth/callback", { code })
   if (code) {
     const supabase = createRouteHandlerClient({ cookies })
     await supabase.auth.exchangeCodeForSession(code)
