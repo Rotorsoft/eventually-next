@@ -8,6 +8,7 @@ import { client } from "@rotorsoft/eventually"
 
 bootstrap(Hotel, "my_hotel")
 
+export const revalidate = 0
 export default async function Dashboard() {
   // dirty way to get rooms
   // TODO: use read model
