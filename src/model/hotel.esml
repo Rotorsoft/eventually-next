@@ -1,4 +1,20 @@
 aggregate Hotel
-handles OpenRoom, BookRoom
-emits RoomOpened, RoomBooked
+handles 
+  OpenRoom,
+  CloseRoom,
+  BookRoom,
+  CheckInRoom,
+  CheckOutRoom
+emits
+  RoomOpened,
+  RoomClosed,
+  RoomBooked,
+  RoomCheckedIn,
+  RoomCheckedOut
+
+projector NextTrimester
+handles
+  RoomBooked,
+  RoomCheckedIn,
+  RoomCheckedOut
 

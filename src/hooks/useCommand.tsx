@@ -3,35 +3,36 @@ import { useState } from "react"
 
 export default function useCommand(
   aggregate: string,
-  name: string
-): [boolean, (id: string, body: any) => Promise<void>] {
+  command: string
+): [boolean, (stream: string, body: any) => Promise<Response | undefined>] {
   const [loading, setLoading] = useState(false)
 
-  async function invoke(id: string, body: any) {
+  async function invoke(stream: string, body: any) {
     setLoading(true)
     try {
-      const response = await fetch(`/command/${aggregate}/${id}/${name}`, {
+      const response = await fetch(`/api/${aggregate}/${stream}/${command}`, {
         method: "POST",
         body: JSON.stringify(body),
       })
       const result = await response.json()
-      if (response.status === 200)
+      // console.log(result)
+
+      if (response.status === 200) {
         toast({
-          description: (
-            <pre className="text-xs rounded-md">
-              {JSON.stringify(result, null, 2)}
-            </pre>
-          ),
+          title: response.statusText,
+          description: `Command ${command} success!`,
         })
-      else
+      } else
         toast({
           variant: "destructive",
+          title: response.statusText,
           description: (
             <pre className="text-xs rounded-md">
               {JSON.stringify(result, null, 2)}
             </pre>
           ),
         })
+      return response
     } catch (error: any) {
       toast({
         variant: "destructive",

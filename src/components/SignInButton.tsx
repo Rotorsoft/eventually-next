@@ -10,20 +10,22 @@ export default function SignInButton() {
   const router = useRouter()
   const supabase = useSupabase()
 
+  async function signIn() {
+    // Next-Auth
+    // signIn("google", { callbackUrl: "/dashboard" })
+
+    // Supabase
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${location.origin}/auth/callback`,
+      },
+    })
+    router.replace("/")
+  }
+
   return (
-    <Button
-      className="ml-3"
-      variant="outline"
-      onClick={async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: {
-            redirectTo: `${location.origin}/auth/callback`,
-          },
-        })
-        router.replace("/")
-      }}
-    >
+    <Button className="ml-3" variant="outline" onClick={signIn}>
       <span className="mr-2">
         <GoogleLogo />
       </span>

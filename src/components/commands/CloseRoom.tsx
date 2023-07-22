@@ -6,10 +6,10 @@ import useCommand from "@/hooks/useCommand"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 
-export default function OpenRoom({ rooms }: { rooms: number[] }) {
+export default function CloseRoom({ rooms }: { rooms: number[] }) {
   const router = useRouter()
   const form = useForm()
-  const [loading, invoke] = useCommand("Hotel", "OpenRoom")
+  const [loading, invoke] = useCommand("Hotel", "CloseRoom")
 
   async function submit(number: number) {
     const response = await invoke("my_hotel", { number })
@@ -25,7 +25,7 @@ export default function OpenRoom({ rooms }: { rooms: number[] }) {
               <Button
                 variant="outline"
                 key={room}
-                className="m-1 w-10"
+                className="m-1 w-10  border-slate-500"
                 onClick={() => submit(room)}
               >
                 {room}

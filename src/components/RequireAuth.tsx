@@ -1,6 +1,7 @@
 "use client"
 
 import { useSession } from "@/components/SupabaseProvider"
+import SignInButton from "./SignInButton"
 // import { useSession } from "next-auth/react"
 
 export default function RequireAuth() {
@@ -21,7 +22,10 @@ export default function RequireAuth() {
   ) : (
     <div>
       <h3>Next Step</h3>
-      <blockquote>Sign in with Google</blockquote>
+      <blockquote className="flex items-center">
+        <span>Sign in with Google</span>
+        <SignInButton />
+      </blockquote>
     </div>
   )
 }

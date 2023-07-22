@@ -8,7 +8,6 @@ import { useSession } from "@/components/SupabaseProvider"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import SignInButton from "@/components/SignInButton"
 import SignOutButton from "@/components/SignOutButton"
 
 export default function Navbar() {
@@ -26,7 +25,7 @@ export default function Navbar() {
   // Supabase
   const isAuth = session
   const username = session?.user.email
-  const image = session?.user.user_metadata["picture"]
+  const image = session?.user.user_metadata.picture
 
   return (
     <div className="p-3 border-b border-slate-300 dark:border-slate-700 w-full flex justify-between items-center">
@@ -54,19 +53,15 @@ export default function Navbar() {
         ) : null}
       </div>
 
-      <div className="flex items-center">
-        {isAuth ? (
-          <>
-            <Avatar>
-              <AvatarImage src={image || ""} />
-              <AvatarFallback>{username}</AvatarFallback>
-            </Avatar>
-            <SignOutButton />
-          </>
-        ) : (
-          <SignInButton />
-        )}
-      </div>
+      {isAuth && (
+        <div className="flex items-center">
+          <Avatar>
+            <AvatarImage src={image || ""} />
+            <AvatarFallback>{username}</AvatarFallback>
+          </Avatar>
+          <SignOutButton />
+        </div>
+      )}
     </div>
   )
 }

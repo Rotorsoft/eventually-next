@@ -1,59 +1,34 @@
-"use client"
+import BookRoomCard from "@/components/commands/BookRoomCard"
+import CloseRoomCard from "@/components/commands/CloseRoomCard"
+import OpenRoomCard from "@/components/commands/OpenRoomCard"
+import BookingsCard from "@/components/projectors/BookingsCard"
+import { bootstrap } from "@/lib/eventually"
+import { Hotel } from "@/model/Hotel.aggregate"
+import { client } from "@rotorsoft/eventually"
 
-import { useSession } from "@/components/SupabaseProvider"
-import BookRoom from "@/components/commands/BookRoom"
-import OpenRoom from "@/components/commands/OpenRoom"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { useEffect, useState } from "react"
+bootstrap(Hotel, "my_hotel")
 
-export default function Dashboard() {
-  const [closed, setClosed] = useState<string[]>([])
-
-  useEffect(() => {
-    setClosed(["101", "102", "103", "201", "202", "203"])
-  }, [])
+export default async function Dashboard() {
+  // dirty way to get rooms
+  // TODO: use read model
+  const hotel = await client().load(Hotel, "my_hotel")
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-wrap justify-center">
-        <Card className="w-[250px] m-2">
-          <CardHeader>
-            <CardTitle>Open Room</CardTitle>
-            <CardDescription>
-              As a hotel admin, you can open new rooms with a price
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <OpenRoom rooms={closed} />
-          </CardContent>
-        </Card>
-        <Card className="w-[250px] m-2">
-          <CardHeader>
-            <CardTitle>Book Room</CardTitle>
-            <CardDescription>
-              As a guest, you can book available rooms
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <BookRoom />
-          </CardContent>
-        </Card>
+        <OpenRoomCard
+          rooms={Object.values(hotel.state.rooms)
+            .filter((room) => room.status === "closed")
+            .map(({ number }) => number)}
+        />
+        <CloseRoomCard
+          rooms={Object.values(hotel.state.rooms)
+            .filter((room) => room.status === "open")
+            .map(({ number }) => number)}
+        />
+        <BookRoomCard />
       </div>
-      <Card className="m-2">
-        <CardHeader>
-          <CardTitle>Bookings</CardTitle>
-          <CardDescription>Booking Calendar</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div>Booking Calendar Here!</div>
-        </CardContent>
-      </Card>
+      <BookingsCard />
     </div>
   )
 }
