@@ -5,9 +5,12 @@ import {
   bind,
   clone,
 } from "@rotorsoft/eventually"
-import { HotelSchemas } from "./schemas/Hotel.schema"
+import { BookingEvent, HotelSchemas } from "./schemas/Hotel.schema"
 import { Booking, RoomStatus, RoomType } from "./schemas/Booking.schema"
 import seed from "./seed"
+import { randomUUID } from "crypto"
+import { da } from "date-fns/locale"
+import { Room } from "./schemas/Room.schema"
 
 const DAY_MS = 24 * 3600 * 1000
 // calculates how many nighs in a booking
@@ -17,19 +20,23 @@ export const nights = (booking: Infer<typeof Booking>): number => {
 }
 // calculates if a room of a certain type is fully booked within a time period
 export const fullyBooked = (
-  bookings: Infer<typeof Booking>[],
+  bookings: Record<string, Infer<typeof BookingEvent>>,
   type: RoomType,
   from: Date,
   to: Date,
   max: number
 ) => {
-  const sum = bookings.reduce((sum, booking) => {
+  const sum = Object.values(bookings).reduce((sum, booking) => {
     if (
       booking.type === type &&
       ((from >= booking.checkin && from <= booking.checkout) ||
         (to >= booking.checkin && to <= booking.checkout))
     ) {
-      for (let day = from; day.setDate(day.getDate() + 1); day <= to) {
+      for (
+        let day = new Date(from);
+        day <= to;
+        day.setDate(day.getDate() + 1)
+      ) {
         const key = day.toISOString().substring(0, 10)
         sum[key] = (sum[key] || 0) + 1
       }
@@ -85,24 +92,35 @@ export const Hotel = (stream: string): InferAggregate<typeof HotelSchemas> => ({
         },
       }),
     RoomBooked: (state, { data }) =>
-      clone(state, { bookings: state.bookings.concat(data) }),
-    RoomCheckedIn: (state, { data }) =>
       clone(state, {
-        rooms: {
-          [data.number]: {
-            ...state.rooms[data.number],
-            status: "booked",
-            booking: data,
-          },
+        bookings: {
+          [data.id]: { ...data },
         },
       }),
+    RoomCheckedIn: (state, { data }) => {
+      // here we connect the dots...assign booking<->room
+      const booking = { ...state.bookings[data.bookingId], number: data.number }
+      const room: Infer<typeof Room> = {
+        ...state.rooms[data.number],
+        status: "booked",
+        bookingId: data.bookingId,
+      }
+      return clone(state, {
+        bookings: {
+          [data.bookingId]: booking,
+        },
+        rooms: {
+          [data.number]: room,
+        },
+      })
+    },
     RoomCheckedOut: (state, { data }) =>
       clone(state, {
         rooms: {
           [data.number]: {
             ...state.rooms[data.number],
             status: "open",
-            booking: undefined,
+            bookingId: undefined,
           },
         },
       }),
@@ -117,10 +135,6 @@ export const Hotel = (stream: string): InferAggregate<typeof HotelSchemas> => ({
       return [bind("RoomClosed", { number })]
     },
     BookRoom: async (booking, state) => {
-      // check price?
-      if (state.prices[booking.type] !== booking.price)
-        throw Error("Prices don't match!")
-
       // make sure the hotel has room for this booking (approx)
       if (
         fullyBooked(
@@ -134,9 +148,19 @@ export const Hotel = (stream: string): InferAggregate<typeof HotelSchemas> => ({
       )
         throw Error("This room type if fully booked within this period!")
 
-      return [bind("RoomBooked", booking)]
+      return [
+        bind("RoomBooked", {
+          ...booking,
+          id: randomUUID(),
+          price: state.prices[booking.type]!,
+        }),
+      ]
     },
-    CheckInRoom: async (booking, { rooms }) => {
+    CheckInRoom: async ({ bookingId }, { bookings, rooms }) => {
+      // find booking
+      const booking = bookings[bookingId]
+      if (!booking) throw Error(`Booking ${bookingId} not found!`)
+
       // is it the right booking?
       if (Math.abs(booking.checkin.getTime() - Date.now()) > DAY_MS)
         throw Error("Checkin is out of range!") // not an exact formula!
@@ -148,7 +172,7 @@ export const Hotel = (stream: string): InferAggregate<typeof HotelSchemas> => ({
       if (!room) throw Error("No available rooms found!")
 
       // let's assume is room is clean ;-)
-      return [bind("RoomCheckedIn", { ...booking, number: room.number })]
+      return [bind("RoomCheckedIn", { bookingId, number: room.number })]
     },
     CheckOutRoom: async ({ number }, state) => {
       CheckRoom(state, number, "booked")

@@ -7,16 +7,10 @@ export type RoomStatus = (typeof ROOM_STATUSES)[number]
 
 export const Booking = z
   .object({
-    id: z.string().uuid(),
     type: z.enum(ROOM_TYPES),
-    checkin: z.coerce.date(),
+    checkin: z.coerce.date().min(new Date(new Date().toDateString())),
     checkout: z.coerce.date(),
-    customer: z.string().min(5),
-    price: z
-      .number()
-      .min(50, { message: "Price cannot be less than $50" })
-      .max(500, { message: "Price cannot be more than $500" }),
-    number: z.number().optional(),
+    guest: z.string().min(5),
   })
   .refine(({ checkin, checkout }) => checkin < checkout, {
     message: "Checkin date must be earlier than checkout date",

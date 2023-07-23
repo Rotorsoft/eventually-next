@@ -1,4 +1,5 @@
 import {
+  CalendarIcon,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 
 export const Icons = {
+  CalendarIcon,
   Check,
   ChevronLeft,
   ChevronRight,

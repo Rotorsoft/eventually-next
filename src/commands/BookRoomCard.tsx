@@ -1,4 +1,4 @@
-import BookRoom from "./BookRoom"
+import BookRoom, { Props } from "./BookRoom"
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-export default async function BookRoomCard() {
+export default async function BookRoomCard(props: Props) {
   return (
     <Card className="w-[250px] m-2">
       <CardHeader>
@@ -15,7 +15,11 @@ export default async function BookRoomCard() {
         <CardDescription>As a guest, you can book rooms</CardDescription>
       </CardHeader>
       <CardContent>
-        <BookRoom />
+        {Object.keys(props.types).length ? (
+          <BookRoom {...props} />
+        ) : (
+          <h1 className="text-center">CLOSED</h1>
+        )}
       </CardContent>
     </Card>
   )

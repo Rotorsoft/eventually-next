@@ -1,4 +1,4 @@
-import OpenRoom from "./OpenRoom"
+import OpenRoom, { Props } from "./OpenRoom"
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-export default async function OpenRoomCard({ rooms }: { rooms: number[] }) {
+export default async function OpenRoomCard(props: Props) {
   return (
     <Card className="w-[250px] m-2">
       <CardHeader>
@@ -17,7 +17,7 @@ export default async function OpenRoomCard({ rooms }: { rooms: number[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <OpenRoom rooms={rooms} />
+        <OpenRoom {...props} />
       </CardContent>
     </Card>
   )

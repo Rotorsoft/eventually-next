@@ -14,18 +14,20 @@ export default function useCommand(
         method: "POST",
         body: JSON.stringify(body),
       })
+      const { status, statusText } = response
+      const title = `${status} ${statusText}`
       const result = await response.json()
       // console.log(result)
 
-      if (response.status === 200) {
+      if (status === 200) {
         toast({
-          title: response.statusText,
+          title,
           description: `Command ${command} success!`,
         })
       } else
         toast({
           variant: "destructive",
-          title: response.statusText,
+          title,
           description: (
             <pre className="text-xs rounded-md">
               {JSON.stringify(result, null, 2)}

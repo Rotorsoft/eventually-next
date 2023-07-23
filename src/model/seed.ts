@@ -5,7 +5,7 @@ import { HotelSchemas } from "./schemas/Hotel.schema"
 // In this case, the hotel can reset each season, for renovations, etc, etc
 export default function seed(): Infer<typeof HotelSchemas.state> {
   return {
-    bookings: [],
+    bookings: {},
     rooms: {
       100: { number: 100, type: "single", status: "closed" },
       101: { number: 101, type: "single", status: "open" },

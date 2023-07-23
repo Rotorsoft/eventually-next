@@ -5,9 +5,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import CloseRoom from "./CloseRoom"
+import CloseRoom, { Props } from "./CloseRoom"
 
-export default async function CloseRoomCard({ rooms }: { rooms: number[] }) {
+export default async function CloseRoomCard(props: Props) {
   return (
     <Card className="w-[250px] m-2">
       <CardHeader>
@@ -17,7 +17,7 @@ export default async function CloseRoomCard({ rooms }: { rooms: number[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <CloseRoom rooms={rooms} />
+        <CloseRoom {...props} />
       </CardContent>
     </Card>
   )

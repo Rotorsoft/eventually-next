@@ -1,11 +1,13 @@
 import { getAuthenticatedUser } from "@/lib/auth"
-import { bootstrap, parseHttpError } from "@/lib/eventually"
+import { eventually, toJsonResponse } from "@/lib/eventually"
 import { Hotel } from "@/model/Hotel.aggregate"
 import { HotelSchemas } from "@/model/schemas/Hotel.schema"
 import { client } from "@rotorsoft/eventually"
+import { revalidatePath } from "next/cache"
 import { NextRequest, NextResponse } from "next/server"
 
-bootstrap(Hotel, "my_hotel")
+// create state snapshots every 100 events
+eventually(Hotel, "my_hotel", (snap) => snap.applyCount > 100)
 
 export async function POST(
   req: NextRequest,
@@ -25,9 +27,14 @@ export async function POST(
     const res = NextResponse.json(snapshots)
     const last = snapshots.at(-1)
     last && res.headers.set("etag", last.event!.version.toString())
+
+    // revalidate cached segments
+    // TODO: pass revalidate path/tag in args?
+    revalidatePath("/dashboard")
+
     return res
-  } catch (error) {
-    const { message, status, details } = parseHttpError(error)
-    return NextResponse.json({ error: { message, details } }, { status })
+  } catch (err) {
+    const { status, statusText, error } = toJsonResponse(err)
+    return NextResponse.json({ error }, { status, statusText })
   }
 }
