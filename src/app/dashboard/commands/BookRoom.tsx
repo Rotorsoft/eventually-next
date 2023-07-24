@@ -1,6 +1,6 @@
 "use client"
 
-import useCommand from "@/commands/eventually-client"
+import useCommand from "@/app/dashboard/commands/eventually-client"
 import DatePopover from "@/components/DatePopover"
 import Icons from "@/components/Icons"
 import { Button } from "@/components/ui/button"
@@ -32,12 +32,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Infer } from "@rotorsoft/eventually"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { HotelProps } from "../HotelProps"
 
-export type Props = {
-  hotel: string
-  types: Record<RoomType, number>
-}
-export default function BookRoom({ hotel, types }: Props) {
+export default function BookRoom({ hotel, types }: HotelProps) {
   const router = useRouter()
   const [loading, invoke] = useCommand("Hotel", "BookRoom")
   const today = new Date()

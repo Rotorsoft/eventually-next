@@ -24,17 +24,6 @@ model my_hotel {
   @@index([name], map: "my_hotel_name_ix")
 }
 
-model my_hotel_rooms {
-  id        String  @id @db.VarChar(100)
-  type      String? @db.VarChar(20)
-  number    Int?
-  price     Int?
-  booked    Json?   @db.Json
-  watermark BigInt  @map("__watermark")
-
-  @@index([type], map: "my_hotel_rooms_type_ix")
-}
-
 model my_hotel_subscriptions {
   consumer  String    @id @db.VarChar(100)
   watermark BigInt
@@ -42,3 +31,9 @@ model my_hotel_subscriptions {
   expires   DateTime? @db.Timestamptz(6)
 }
  
+// add sales projection
+model my_hotel_sales {
+  id        String  @id @db.VarChar(100)
+  totals    Json    @db.Json
+  watermark BigInt  @map("__watermark")
+} 

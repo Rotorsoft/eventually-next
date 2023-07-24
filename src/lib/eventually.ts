@@ -1,34 +1,32 @@
+import { Hotel } from "@/model/Hotel.aggregate"
+import { Sales } from "@/model/Sales.projector"
 import {
-  AggregateFactory,
-  CommitPredicate,
   Errors,
-  Messages,
-  State,
+  InMemoryBroker,
   app,
   bootstrap,
   broker,
   store,
 } from "@rotorsoft/eventually"
-import { PostgresStore } from "@rotorsoft/eventually-pg"
+import { PostgresProjectorStore, PostgresStore } from "@rotorsoft/eventually-pg"
 
-export function eventually<
-  S extends State,
-  C extends Messages,
-  E extends Messages
->(
-  factory: AggregateFactory<S, C, E>,
-  table: string,
-  commit?: CommitPredicate<S, E>
-) {
+// bootstrap the hotel app
+export function eventually() {
   app().artifacts.size === 0 &&
     void bootstrap(async () => {
-      store(PostgresStore(table))
-      app().with(factory).build()
-      commit && broker()
+      store(PostgresStore("my_hotel"))
+      app()
+        // commit hotel state every 100 events
+        .with(Hotel, { commit: (snap) => snap.applyCount >= 100 })
+        .with(Sales, {
+          store: PostgresProjectorStore("my_hotel_sales", { id: "" }, ""),
+        })
+        .build()
+      broker(InMemoryBroker(3000, 1, 1000)).poll()
     })
 }
 
-type Status = 500 | 400 | 404 | 409
+type Status = 400 | 404 | 409 | 500
 type JsonResponse = {
   status: Status
   statusText: string

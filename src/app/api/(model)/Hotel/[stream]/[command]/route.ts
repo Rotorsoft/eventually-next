@@ -6,8 +6,7 @@ import { client } from "@rotorsoft/eventually"
 import { revalidatePath } from "next/cache"
 import { NextRequest, NextResponse } from "next/server"
 
-// create state snapshots every 100 events
-eventually(Hotel, "my_hotel", (snap) => snap.applyCount > 100)
+eventually()
 
 export async function POST(
   req: NextRequest,
@@ -17,6 +16,9 @@ export async function POST(
 ) {
   try {
     const user = await getAuthenticatedUser()
+    // In this app, the hotel stream must match the user id
+    if (user?.id !== params.stream) throw Error("Invalid tenant")
+
     const ifMatch = req.headers.get("if-match")
     const body = await req.json()
     const snapshots = await client().command(Hotel, params.command, body, {

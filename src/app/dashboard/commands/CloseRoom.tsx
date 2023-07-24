@@ -2,15 +2,12 @@
 
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import useCommand from "@/commands/eventually-client"
+import useCommand from "@/app/dashboard/commands/eventually-client"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { HotelProps } from "../HotelProps"
 
-export type Props = {
-  hotel: string
-  rooms: number[]
-}
-export default function CloseRoom({ hotel, rooms }: Props) {
+export default function CloseRoom({ hotel, open }: HotelProps) {
   const router = useRouter()
   const form = useForm()
   const [loading, invoke] = useCommand("Hotel", "CloseRoom")
@@ -25,7 +22,7 @@ export default function CloseRoom({ hotel, rooms }: Props) {
       <form className="space-y-8">
         <fieldset disabled={loading}>
           <div className="flex flex-wrap">
-            {rooms.map((room) => (
+            {open.map((room) => (
               <Button
                 variant="outline"
                 key={room}
