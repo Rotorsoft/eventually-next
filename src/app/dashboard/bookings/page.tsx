@@ -10,6 +10,8 @@ import {
 import Totals from "../projectors/Totals"
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 export default function Bookings() {
   return (
     <div className="flex flex-wrap">
