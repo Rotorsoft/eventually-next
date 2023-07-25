@@ -14,7 +14,11 @@ export async function GET(req: NextRequest) {
   const key = req.headers.get("API_KEY")
   if (key === KEY) {
     // drain event handlers
-    const result = await drain(Sales, ["RoomBooked"])
+    const result = await drain(Sales, {
+      names: ["RoomBooked"],
+      timeout: 3000,
+      limit: 10,
+    })
     return NextResponse.json(result)
   }
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
