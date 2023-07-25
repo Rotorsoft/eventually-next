@@ -21,6 +21,11 @@ Cookie: 'next-auth.csrf-token=52b166538e915c718ff5cf2e85b85800834a11c01c936e40cd
   "customer": "testing customer"
 }
 
+### Drain
+GET {{host}}/api/drain
+Content-Type: application/json
+API_KEY: 12_8__1
+
 
 
 

@@ -1,6 +1,7 @@
 import { toast } from "@/components/ui/use-toast"
 import { useState } from "react"
 
+// command hook to encapsulate common client behavior when interacting with public command api
 export default function useCommand(
   aggregate: string,
   command: string

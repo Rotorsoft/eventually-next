@@ -1,13 +1,6 @@
 import { Hotel } from "@/model/Hotel.aggregate"
 import { Sales } from "@/model/Sales.projector"
-import {
-  Errors,
-  InMemoryBroker,
-  app,
-  bootstrap,
-  broker,
-  store,
-} from "@rotorsoft/eventually"
+import { Errors, app, bootstrap, broker, store } from "@rotorsoft/eventually"
 import { PostgresProjectorStore, PostgresStore } from "@rotorsoft/eventually-pg"
 
 // bootstrap the hotel app
@@ -22,7 +15,8 @@ export function eventually() {
           store: PostgresProjectorStore("my_hotel_sales", { id: "" }, ""),
         })
         .build()
-      broker(InMemoryBroker(3000, 1, 1000)).poll()
+      broker() // to handle commits/state events
+      void broker().drain() // to drain event handlers
     })
 }
 

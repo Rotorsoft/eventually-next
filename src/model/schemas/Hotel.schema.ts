@@ -1,4 +1,4 @@
-import { number, z } from "zod"
+import { z } from "zod"
 import { Booking, ROOM_TYPES } from "./Booking.schema"
 import { Room, RoomNo } from "./Room.schema"
 
@@ -24,7 +24,12 @@ export const HotelSchemas = {
   commands: {
     OpenRoom: RoomNo,
     CloseRoom: RoomNo,
-    BookRoom: Booking,
+    BookRoom: Booking.refine(
+      // refine command to avoid past checkin dates
+      // NOTE: not in event validation to allow replays
+      ({ checkin }) => checkin >= new Date(new Date().toDateString()),
+      { message: "Cannot check in before today", path: ["checkin"] }
+    ),
     CheckInRoom: CheckIn,
     CheckOutRoom: RoomNo,
   },

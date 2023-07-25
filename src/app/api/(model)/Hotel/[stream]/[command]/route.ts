@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 eventually()
 
+// public api exposing aggregate commands to the client
 export async function POST(
   req: NextRequest,
   {

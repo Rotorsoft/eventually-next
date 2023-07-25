@@ -8,7 +8,7 @@ export type RoomStatus = (typeof ROOM_STATUSES)[number]
 export const Booking = z
   .object({
     type: z.enum(ROOM_TYPES),
-    checkin: z.coerce.date().min(new Date(new Date().toDateString())),
+    checkin: z.coerce.date(),
     checkout: z.coerce.date(),
     guest: z.string().min(5),
   })
