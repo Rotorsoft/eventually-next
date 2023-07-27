@@ -1,6 +1,7 @@
 import { eventually } from "@/lib/eventually"
 import { Sales } from "@/model/Sales.projector"
 import { drain } from "@rotorsoft/eventually"
+import { revalidatePath } from "next/cache"
 import { NextRequest, NextResponse } from "next/server"
 
 eventually()
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
       timeout: 3000,
       limit: 10,
     })
+
     return NextResponse.json(result)
   }
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

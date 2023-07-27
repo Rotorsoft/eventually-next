@@ -10,5 +10,4 @@ export type HotelProps = {
   types: Partial<Record<RoomType, number>>
   open: number[]
   closed: number[]
-  summary: MonthlyBookingSummary
 }

@@ -1,15 +1,8 @@
-import {
-  Infer,
-  InferAggregate,
-  Invariant,
-  bind,
-  clone,
-} from "@rotorsoft/eventually"
+import { Infer, InferAggregate, Invariant, bind } from "@rotorsoft/eventually"
 import { BookingEvent, HotelSchemas } from "./schemas/Hotel.schema"
 import { Booking, RoomStatus, RoomType } from "./schemas/Booking.schema"
 import seed from "./seed"
 import { randomUUID } from "crypto"
-import { da } from "date-fns/locale"
 import { Room } from "./schemas/Room.schema"
 
 const DAY_MS = 24 * 3600 * 1000
@@ -79,24 +72,21 @@ export const Hotel = (stream: string): InferAggregate<typeof HotelSchemas> => ({
   schemas: HotelSchemas,
   init: seed,
   reduce: {
-    RoomOpened: (state, { data }) =>
-      clone(state, {
-        rooms: {
-          [data.number]: { ...state.rooms[data.number], status: "open" },
-        },
-      }),
-    RoomClosed: (state, { data }) =>
-      clone(state, {
-        rooms: {
-          [data.number]: { ...state.rooms[data.number], status: "closed" },
-        },
-      }),
-    RoomBooked: (state, { data }) =>
-      clone(state, {
-        bookings: {
-          [data.id]: { ...data },
-        },
-      }),
+    RoomOpened: (state, { data }) => ({
+      rooms: {
+        [data.number]: { ...state.rooms[data.number], status: "open" },
+      },
+    }),
+    RoomClosed: (state, { data }) => ({
+      rooms: {
+        [data.number]: { ...state.rooms[data.number], status: "closed" },
+      },
+    }),
+    RoomBooked: (state, { data }) => ({
+      bookings: {
+        [data.id]: { ...data },
+      },
+    }),
     RoomCheckedIn: (state, { data }) => {
       // here we connect the dots...assign booking<->room
       const booking = { ...state.bookings[data.bookingId], number: data.number }
@@ -105,25 +95,24 @@ export const Hotel = (stream: string): InferAggregate<typeof HotelSchemas> => ({
         status: "booked",
         bookingId: data.bookingId,
       }
-      return clone(state, {
+      return {
         bookings: {
           [data.bookingId]: booking,
         },
         rooms: {
           [data.number]: room,
         },
-      })
+      }
     },
-    RoomCheckedOut: (state, { data }) =>
-      clone(state, {
-        rooms: {
-          [data.number]: {
-            ...state.rooms[data.number],
-            status: "open",
-            bookingId: undefined,
-          },
+    RoomCheckedOut: (state, { data }) => ({
+      rooms: {
+        [data.number]: {
+          ...state.rooms[data.number],
+          status: "open",
+          bookingId: undefined,
         },
-      }),
+      },
+    }),
   },
   on: {
     OpenRoom: async ({ number }, state) => {

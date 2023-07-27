@@ -9,12 +9,14 @@ import { getAuthenticatedUser } from "@/lib/auth"
 import { eventually } from "@/lib/eventually"
 import { Hotel } from "@/model/Hotel.aggregate"
 import { RoomType } from "@/model/schemas/Booking.schema"
-import { client } from "@rotorsoft/eventually"
-import { HotelProps, MonthlyBookingSummary } from "./HotelProps"
-import MonthlyBookings from "./MonthlyBookings"
+import { Infer, client } from "@rotorsoft/eventually"
+import { HotelProps } from "./HotelProps"
 import BookRoom from "./commands/BookRoom"
 import CloseRoom from "./commands/CloseRoom"
 import OpenRoom from "./commands/OpenRoom"
+import MonthlySales from "./projectors/MonthlySales"
+import { SalesSchemas } from "@/model/schemas/Sales.schema"
+import { Sales } from "@/model/Sales.projector"
 
 export const dynamic = "force-dynamic"
 eventually()
@@ -41,26 +43,27 @@ async function loadProps(stream: string): Promise<HotelProps> {
       types[room.type] = hotel.state.prices[room.type]!
       return types
     }, {} as Record<RoomType, number>)
-  const summary = Object.values(hotel.state.bookings).reduce((sum, booking) => {
-    const month = new Intl.DateTimeFormat("en-US", {
-      year: "2-digit",
-      month: "short",
-    }).format(booking.checkin)
-    sum[month] = sum[month] || {}
-    sum[month][booking.type] = (sum[month][booking.type] || 0) + 1
-    return sum
-  }, {} as MonthlyBookingSummary)
-  return { hotel: stream, open, closed, types, summary }
+  return { hotel: stream, open, closed, types }
+}
+
+async function getSales(id: string) {
+  const t: Infer<typeof SalesSchemas.state> = { id, totals: {} }
+  await client().read(Sales, id, (record) => (t.totals = record.state.totals))
+  return t
 }
 
 export default async function Dashboard() {
   const user = await getAuthenticatedUser()
   if (!user) return null
 
-  const props = await loadProps(user.id)
+  const [props, sales] = await Promise.all([
+    loadProps(user.id),
+    getSales(user.id),
+  ])
+
   return (
     <>
-      <MonthlyBookings {...props} />
+      <MonthlySales sales={sales} />
       <div className="flex flex-wrap justify-center">
         <Card className="w-[250px] m-2">
           <CardHeader>

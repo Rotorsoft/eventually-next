@@ -5,25 +5,29 @@ export const Sales = (): InferProjector<typeof SalesSchemas> => ({
   description: "Sales projection",
   schemas: SalesSchemas,
   on: {
-    RoomBooked: async ({ data, stream }) => {
-      let totals: Record<string, number> = {}
-      await client().read(Sales, stream, ({ state }) => {
-        totals = state.totals
-      })
+    RoomBooked: async ({ data, stream }, map) => {
+      let totals = map.get(stream)?.totals
+      if (!totals) {
+        // load state
+        await client().read(Sales, stream, ({ state }) => {
+          totals = state.totals
+        })
+        totals = totals ?? {}
+      }
+
+      const checkinKey = data.checkin.toISOString().substring(0, 7)
+      totals[checkinKey] = totals[checkinKey] || { sales: 0, bookings: {} }
+      totals[checkinKey].bookings[data.type] =
+        (totals[checkinKey].bookings[data.type] || 0) + 1
+
       let day = new Date(data.checkin)
       while (day <= data.checkout) {
-        const key = day.toISOString().substring(0, 10)
-        totals[key] = (totals[key] || 0) + data.price
+        const key = day.toISOString().substring(0, 7)
+        totals[key] = totals[key] || { sales: 0, bookings: {} }
+        totals[key].sales = totals[key].sales + data.price
         day.setDate(day.getDate() + 1)
       }
-      return {
-        upserts: [
-          {
-            where: { id: stream },
-            values: { totals },
-          },
-        ],
-      }
+      return [{ id: stream, totals }]
     },
   },
 })
