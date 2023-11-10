@@ -1,0 +1,15 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "local-docker-eventually-next",
+      "group": "postgres",
+      "username": "postgres",
+      "password": "postgres",
+      "database": "eventually_next"
+    }
+  ]
+}

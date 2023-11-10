@@ -12,7 +12,10 @@ export function eventually() {
         // commit hotel state every 100 events
         .with(Hotel, { commit: (snap) => snap.applyCount >= 100 })
         .with(Sales, {
-          store: PostgresProjectorStore("my_hotel_sales", { id: "" }, ""),
+          projector: {
+            store: PostgresProjectorStore("my_hotel_sales"),
+            indexes: [],
+          },
         })
         .build()
       broker() // to handle commits/state events
